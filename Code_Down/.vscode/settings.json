@@ -1,0 +1,10 @@
+{
+    "C_Cpp.intelliSenseEngine": "default",
+    "files.associations": {
+        "referee_two_task.h": "c",
+        "freertos.h": "c",
+        "protocol.h": "c",
+        "main.h": "c",
+        "crc8_crc16.h": "c"
+    }
+}
