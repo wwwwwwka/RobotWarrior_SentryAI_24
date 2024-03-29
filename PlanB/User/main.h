@@ -37,6 +37,7 @@ typedef union
 #define SoftWare_NVIC 5
 #define Camera_NVIC 3
 #define TIM3_NVIC 1
+#define USART6_NVIC 4
 
 
 #define temperature 26

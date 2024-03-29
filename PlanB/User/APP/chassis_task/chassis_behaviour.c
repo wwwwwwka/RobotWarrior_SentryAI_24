@@ -21,6 +21,10 @@
 
 #include "arm_math.h"
 #include "led.h"
+#include "CAN_Receive.h"
+#include "stdio.h"
+#include "uart1.h"
+
 
 #include "gimbal_behaviour.h"
 #include "rc_handoff.h"
@@ -145,7 +149,7 @@ void chassis_behavour_set(chassis_move_t *chassis_move_mode)
         return;
     }
 
-    chassis_behaviour_mode = CHASSIS_ROTATION;
+    //chassis_behaviour_mode = CHASSIS_ROTATION;
     //底盘不移动状态机拥有最高优先级，return 不会设置其他模式
     if (switch_is_down(chassis_move_mode->chassis_RC->rc.s[MODE_CHANNEL]))
     {
@@ -236,19 +240,21 @@ void chassis_behaviour_mode_set(chassis_move_t *chassis_move_mode)
     //     chassis_behaviour_mode = CHASSIS_INFANTRY_FOLLOW_GIMBAL_YAW;
     // }
 
-    // chassis_behavour_set(chassis_move_mode);
-    // chassis_behaviour_mode = CHASSIS_ROTATION;  
+    //chassis_behavour_set(chassis_move_mode);
+    //chassis_behaviour_mode = CHASSIS_ROTATION; 
+    printf("%d\n",toe_is_error(DBUS_TOE));
     if(toe_is_error(DBUS_TOE) != 1)
 	{
-		chassis_behavour_set(chassis_move_mode);
+	   chassis_behavour_set(chassis_move_mode);
 	}
 	else
 	{
 		if(get_game_start()==1)
         {
-            chassis_behaviour_mode = CHASSIS_ROTATION; 
+            chassis_behaviour_mode = CHASSIS_ROTATION;
         }
 	}
+
     //根据行为状态机选择底盘状态机
     if (chassis_behaviour_mode == CHASSIS_ZERO_FORCE)
     {

@@ -20,8 +20,10 @@
   ****************************(C) COPYRIGHT 2019 DJI****************************
   */
 #include "chassis_power_control.h"
-#include "referee.h"
+#include "CAN_Receive.h"
 #include "arm_math.h"
+#include "uart1.h"
+#include "stdio.h"
 //#include "detect_task.h"
 
 // #define POWER_LIMIT         80.0f
@@ -40,7 +42,7 @@
 void chassis_power_control(chassis_move_t *chassis_power_control)
 {
     fp32 chassis_power = 0.0f;
-    fp32 chassis_power_buffer = 0.0f;
+    uint16_t chassis_power_buffer = 0;
     fp32 total_current_limit = 0.0f;
     fp32 total_current = 0.0f;
     // uint8_t robot_id = get_robot_id();
@@ -53,10 +55,11 @@ void chassis_power_control(chassis_move_t *chassis_power_control)
     //     total_current_limit = NO_JUDGE_TOTAL_CURRENT_LIMIT;
     // }
     // else
-	fp32 POWER_LIMIT = 40.0f;
+	uint16_t POWER_LIMIT = 40;
 	get_chassis_power_limit(&POWER_LIMIT);
     {
         get_chassis_power_and_buffer(&chassis_power, &chassis_power_buffer);
+        printf("%f,%d,%d\n",chassis_power,POWER_LIMIT,chassis_power_buffer);
         //功率超过80w 和缓冲能量小于60j,因为缓冲能量小于60意味着功率超过80w
         if(chassis_power_buffer < WARNING_POWER_BUFF)
         {

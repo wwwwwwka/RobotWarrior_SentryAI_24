@@ -8,6 +8,7 @@
 #include "key.h"
 #include "rc.h"
 #include "uart1.h"
+#include "uart6.h"
 #include "can.h"
 #include "trigger.h"
 #include "laser.h"
@@ -76,7 +77,9 @@ void BSP_Init(void)
 
 	//串口1初始化
 	UART1_Init();
-	ROS_Init();
+	//ROS_Init();
+
+	Actuator_uart6_init(1000000);
 
 	//CAN通信初始化
 	CAN1_mode_init(CAN_SJW_1tq, CAN_BS2_2tq, CAN_BS1_6tq, 5, CAN_Mode_Normal);

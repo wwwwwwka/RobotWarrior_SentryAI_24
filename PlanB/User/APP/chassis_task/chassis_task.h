@@ -99,9 +99,11 @@
 #define CHASSIS_CTL_TIME 2
 
 //小陀螺旋转速度
-#define ROTATION_SPEED_MAX 2.0f
+//此处ROTATION_SPEED_MAX为4时功率为最高为80，平均为60
+//ROTATION_SPEED_MAX为3.5时，最高为64，平均为50
+//ROTATION_SPEED_MAX为3时,最高为50，常值为38左右
+#define ROTATION_SPEED_MAX 3.0f
 #define ROTATION_SPEED_ADD_VALUE ROTATION_SPEED_MAX/3
-
 
 //摇摆原地不动摇摆最大角度(rad)
 #define SWING_NO_MOVE_ANGLE 0.7f

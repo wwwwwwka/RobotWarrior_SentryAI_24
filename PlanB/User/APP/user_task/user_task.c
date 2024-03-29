@@ -37,11 +37,12 @@
 #include "remote_control.h"
 #include "rc_handoff.h"
 #include "shoot.h"
-#include "referee.h"
+#include "CAN_Receive.h"
 
 #include "voltage_task.h"
 #include "Kalman_Filter.h"
 #include "bluetooth.h"
+#include "detect_task.h"
 //#define user_is_error() toe_is_error(errorListLength)
 
 #if INCLUDE_uxTaskGetStackHighWaterMark
@@ -59,9 +60,9 @@ KalmanInfo Power_KalmanInfo_Structure;
 
 fp32 local_power = 0, local_buffer = 0;
 uint8_t robot_id = 0;
+uint8_t game_start = 3;
 
-
-extern int8_t temp_set;
+//extern int8_t temp_set = 0;
 
 fp32 Power_Calc(void);
 
@@ -97,6 +98,7 @@ void UserTask(void *pvParameters)
         angle_degree[1] = (*(angle + INS_PITCH_ADDRESS_OFFSET)) * 57.3f;
         angle_degree[2] = (*(angle + INS_ROLL_ADDRESS_OFFSET)) * 57.3f;
 
+        //printf("%d\n",toe_is_error(DBUS_TOE));
         // angle_degree[0] = (*(angle + INS_YAW_ADDRESS_OFFSET));
         // angle_degree[1] = (*(angle + INS_PITCH_ADDRESS_OFFSET));
         // angle_degree[2] = (*(angle + INS_ROLL_ADDRESS_OFFSET));
@@ -151,9 +153,10 @@ void UserTask(void *pvParameters)
 
         //获取陀螺仪数据
         // printf("%.2f, %.2f, %.2f\n",local_INS_accel[0],local_INS_accel[1],local_gimbal_control->gimbal_yaw_motor.relative_angle * 57.3f);
-
+        //printf("%f\n",local_chassis_move->);
         robot_id = get_robot_id();
-
+        game_start = get_game_start();
+        //printf("%d\n",game_start);
         vTaskDelay(10);
 #if INCLUDE_uxTaskGetStackHighWaterMark
         UserTaskStack = uxTaskGetStackHighWaterMark(NULL);

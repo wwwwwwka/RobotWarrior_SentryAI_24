@@ -22,16 +22,19 @@
 #include "arm_math.h"
 #include "user_lib.h"
 #include "trigger.h"
-#include "referee.h"
+#include "CAN_Receive.h"
 
 #include "CAN_receive.h"
 #include "gimbal_behaviour.h"
 #include "pid.h"
 // #include "detect_task.h"
+#include "uart1.h"
+#include "stdio.h"
 
 #include "rc_handoff.h"
 #include "buzzer.h"
 #include "Laser.h"
+
 
 #define shoot_fric1_on(pwm) fric1_on((pwm))
 #define shoot_fric2_on(pwm) fric2_on((pwm))
@@ -66,7 +69,7 @@ static void trigger_motor_turn_back(void);
   */
 static void shoot_bullet_control(void);
 
-static void shoot_limit_pwm_set(void);
+//static void shoot_limit_pwm_set(void);
 
 shoot_control_t shoot_control;          //射击数据
 
@@ -77,7 +80,7 @@ shoot_control_t shoot_control;          //射击数据
   */
 void shoot_init(void)
 {
-
+    
     static const fp32 Trigger_speed_pid[3] = {TRIGGER_ANGLE_PID_KP, TRIGGER_ANGLE_PID_KI, TRIGGER_ANGLE_PID_KD};
     shoot_control.shoot_mode = SHOOT_STOP;
     //遥控器指针
@@ -276,16 +279,20 @@ static void shoot_set_mode(void)
         }
     }
 
+    get_shoot_heat0_limit_and_heat0(&shoot_control.heat_limit_0, &shoot_control.heat_0);
+    get_shoot_heat1_limit_and_heat1(&shoot_control.heat_limit_1, &shoot_control.heat_1);
+    //printf("%d,%d,%d,%d\n",shoot_control.heat_limit_0, shoot_control.heat_0,shoot_control.heat_limit_1, shoot_control.heat_1);
+    
     //枪口热量限制
-    get_shoot_heat0_limit_and_heat0(&shoot_control.heat_limit, &shoot_control.heat);
+    /*get_shoot_heat0_limit_and_heat0(&shoot_control.heat_limit, &shoot_control.heat);
     if((shoot_control.heat + SHOOT_HEAT_REMAIN_VALUE > shoot_control.heat_limit))
     {
         if(shoot_control.shoot_mode == SHOOT_BULLET || shoot_control.shoot_mode == SHOOT_CONTINUE_BULLET)
         {
             shoot_control.shoot_mode = SHOOT_READY;
         }
-    }
-
+    }*/
+    
     //如果云台状态是 无力状态，就关闭射击
     if (gimbal_cmd_to_shoot_stop())
     {
@@ -422,7 +429,7 @@ static void shoot_feedback_update(void)
     //     shoot_control.fric1_ramp.max_value = FRIC_DOWN;
     //     shoot_control.fric2_ramp.max_value = FRIC_DOWN;
     // }
-    shoot_limit_pwm_set();
+    //shoot_limit_pwm_set();
 
 
 }
@@ -506,7 +513,7 @@ const shoot_control_t *get_shoot_control_point(void)
     return &shoot_control;
 }
 
-static void shoot_limit_pwm_set(void)
+/*static void shoot_limit_pwm_set(void)
 {
     uint8_t speed = get_shoot_17mm_speed_limit();
     switch (speed)
@@ -524,4 +531,4 @@ static void shoot_limit_pwm_set(void)
         shoot_control.fric1_ramp.max_value = 1900;
         break;
     }
-}
+}*/

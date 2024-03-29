@@ -61,12 +61,6 @@
             "path": "../User/APP/INS_task/INS_task.c"
           },
           {
-            "path": "../User/APP/referee_task/referee_usart_task.c"
-          },
-          {
-            "path": "../User/APP/referee_task/referee.c"
-          },
-          {
             "path": "../User/APP/remote_control/rc_handoff.c"
           },
           {
@@ -295,64 +289,64 @@
         "name": "Hardware",
         "files": [
           {
-            "path": "../User/hardware/led.c"
-          },
-          {
-            "path": "../User/hardware/rc.c"
-          },
-          {
-            "path": "../User/hardware/uart1.c"
-          },
-          {
-            "path": "../User/hardware/can.c"
-          },
-          {
-            "path": "../User/hardware/i2c.c"
-          },
-          {
-            "path": "../User/hardware/buzzer.c"
-          },
-          {
-            "path": "../User/hardware/key.c"
-          },
-          {
-            "path": "../User/hardware/spi.c"
-          },
-          {
-            "path": "../User/hardware/trigger.c"
-          },
-          {
-            "path": "../User/hardware/exit.c"
-          },
-          {
-            "path": "../User/hardware/temperature.c"
-          },
-          {
-            "path": "../User/hardware/delay.c"
-          },
-          {
-            "path": "../User/hardware/sys.c"
-          },
-          {
             "path": "../User/hardware/adc.c"
           },
           {
             "path": "../User/hardware/bluetooth.c"
           },
           {
-            "path": "../User/hardware/referee_usart.c"
+            "path": "../User/hardware/bsp_dwt/dwt.c"
+          },
+          {
+            "path": "../User/hardware/buzzer.c"
+          },
+          {
+            "path": "../User/hardware/camera_trigger.c"
+          },
+          {
+            "path": "../User/hardware/can.c"
+          },
+          {
+            "path": "../User/hardware/delay.c"
+          },
+          {
+            "path": "../User/hardware/exit.c"
+          },
+          {
+            "path": "../User/hardware/i2c.c"
+          },
+          {
+            "path": "../User/hardware/key.c"
           },
           {
             "path": "../User/hardware/laser.c"
           },
           {
-            "path": "../User/hardware/bsp_dwt/dwt.c"
+            "path": "../User/hardware/led.c"
+          },
+          {
+            "path": "../User/hardware/rc.c"
+          },
+          {
+            "path": "../User/hardware/spi.c"
+          },
+          {
+            "path": "../User/hardware/sys.c"
+          },
+          {
+            "path": "../User/hardware/temperature.c"
           },
           {
             "path": "../User/hardware/timer/timer.c"
           },
           {
-            "path": "../User/hardware/camera_trigger.c"
+            "path": "../User/hardware/trigger.c"
+          },
+          {
+            "path": "../User/hardware/uart1.c"
+          },
+          {
+            "path": "../User/hardware/uart6.c"
           }
         ],
         "folders": []
@@ -534,7 +528,7 @@
       "uploadConfig": {
         "bin": "",
         "target": "stm32f4x",
-        "interface": "stlink",
+        "interface": "cmsis-dap",
         "baseAddr": "0x08000000"
       },
       "uploadConfigMap": {
@@ -595,7 +589,8 @@
           "ARM_MATH_CM4",
           "__CC_ARM",
           "ARM_MATH_MATRIX_CHECK",
-          "ARM_MATH_ROUNDING"
+          "ARM_MATH_ROUNDING",
+          "STM32F407xx"
         ]
       }
     }

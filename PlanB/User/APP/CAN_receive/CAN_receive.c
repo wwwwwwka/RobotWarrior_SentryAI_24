@@ -2,14 +2,16 @@
 
 #include "stm32f4xx.h"
 // #include "rng.h"
-
+#include "uart1.h"
+#include "stdio.h"
 #include "FreeRTOSConfig.h"
 #include "FreeRTOS.h"
 #include "task.h"
 
+
 // #include "Detect_Task.h"
 
-//电机数据读取
+//底盘电机数据读取
 #define get_motor_measure(ptr, rx_message)                                                     \
     {                                                                                          \
         (ptr)->last_ecd = (ptr)->ecd;                                                          \
@@ -18,6 +20,16 @@
         (ptr)->given_current = (uint16_t)((rx_message)->Data[4] << 8 | (rx_message)->Data[5]); \
         (ptr)->temperate = (rx_message)->Data[6];                                              \
     }
+
+//云台电机数据读取
+#define get_gimbal_motor_measuer(ptr, rx_message)                                              \
+    {                                                                                          \
+        (ptr)->last_ecd = (ptr)->ecd;                                                          \
+        (ptr)->ecd = (uint16_t)((rx_message)->Data[0] << 8 | (rx_message)->Data[1]);           \
+        (ptr)->given_current = (uint16_t)((rx_message)->Data[2] << 8 | (rx_message)->Data[3]); \
+        (ptr)->speed_rpm = (uint16_t)((rx_message)->Data[4] << 8 | (rx_message)->Data[5]);     \
+        (ptr)->temperate = (rx_message)->Data[6];                                              \
+    }                                                                                         
 
 //机器人ID和比赛开始指令读取
 #define get_referee_Id_Game_measuer(ptr, rx_message)                                                 \
@@ -50,14 +62,14 @@
 static void CAN_hook(CanRxMsg *rx_message);
 //声明电机变量
 static motor_measure_t motor_yaw, motor_pit, motor_trigger, motor_chassis[4];
-
-static CanTxMsg GIMBAL_TxMessage;
-
+//声明裁判系统相关变量
 static referee_Id_Game_Data_t referee_Id_Game;
 
 static referee_chassis_Data_t referee_chassis;
 
 static referee_shooter_Data_t referee_shooter;
+
+static CanTxMsg GIMBAL_TxMessage;
 
 #if GIMBAL_MOTOR_6020_CAN_LOSE_SLOVE
 static uint8_t delay_time = 100;
@@ -72,6 +84,7 @@ void CAN1_RX0_IRQHandler(void)
     {
         CAN_ClearITPendingBit(CAN1, CAN_IT_FMP0);
         CAN_Receive(CAN1, CAN_FIFO0, &rx1_message);
+        
         CAN_hook(&rx1_message);
     }
 }
@@ -206,9 +219,21 @@ const motor_measure_t *get_Chassis_Motor_Measure_Point(uint8_t i)
 {
     return &motor_chassis[(i & 0x03)];
 }
-uint8_t get_robot_id(void)
+
+void get_chassis_power_and_buffer(fp32 *power, uint16_t *buffer)
 {
     
+    *power = referee_chassis.chassis_power.float_data;
+    *buffer = referee_chassis.chassis_power_buffer;
+}
+
+void get_chassis_power_limit(uint16_t *power_limit)
+{
+	*power_limit = referee_chassis.chassis_power_limit;
+}
+
+uint8_t get_robot_id(void)
+{
     return referee_Id_Game.robot_id;
 }
 
@@ -216,6 +241,20 @@ uint8_t get_game_start(void)
 {
     return referee_Id_Game.game_start;
 }
+
+void get_shoot_heat0_limit_and_heat0(uint16_t *heat0_limit, uint16_t *heat0)
+{
+    *heat0_limit = referee_shooter.shooter_1_limit;
+    *heat0 = referee_shooter.shooter_1_heat;
+}
+
+void get_shoot_heat1_limit_and_heat1(uint16_t *heat1_limit, uint16_t *heat1)
+{
+    
+    *heat1_limit = referee_shooter.shooter_2_limit;
+    *heat1 = referee_shooter.shooter_2_heat;
+}
+
 //统一处理can中断函数，并且记录发送数据的时间，作为离线判断依据
 static void CAN_hook(CanRxMsg *rx_message)
 {
@@ -224,7 +263,7 @@ static void CAN_hook(CanRxMsg *rx_message)
     case CAN_YAW_MOTOR_ID:
     {
         //处理电机数据宏函数
-        get_motor_measure(&motor_yaw, rx_message);
+        get_gimbal_motor_measuer(&motor_yaw, rx_message);
         //记录时间
         //DetectHook(YawGimbalMotorTOE);
         break;
@@ -232,7 +271,7 @@ static void CAN_hook(CanRxMsg *rx_message)
     case CAN_PIT_MOTOR_ID:
     {
         //处理电机数据宏函数
-        get_motor_measure(&motor_pit, rx_message);
+        get_gimbal_motor_measuer(&motor_pit, rx_message);
         //DetectHook(PitchGimbalMotorTOE);
         break;
     }

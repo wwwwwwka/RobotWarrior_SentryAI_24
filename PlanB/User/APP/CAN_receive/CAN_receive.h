@@ -35,7 +35,6 @@ typedef struct
     int16_t last_ecd;       //上次转子机械角度
 } motor_measure_t;
 
-
 //自定义，用于处理从低C板接收到的裁判系统数据
 typedef struct
 {
@@ -60,7 +59,6 @@ typedef struct
     uint16_t shooter_2_heat;
 } referee_shooter_Data_t;
 
-
 extern void CAN_CMD_CHASSIS_RESET_ID(void);
 
 //发送云台控制命令，其中rev为保留字节
@@ -76,8 +74,17 @@ extern const motor_measure_t *get_Trigger_Motor_Measure_Point(void);
 //返回底盘电机变量地址，通过指针方式获取原始数据,i的范围是0-3，对应0x201-0x204,
 extern const motor_measure_t *get_Chassis_Motor_Measure_Point(uint8_t i);
 
+extern void init_referee_struct_data(void);
+extern void referee_data_solve(uint8_t *frame);
+
+extern void get_chassis_power_and_buffer(fp32 *power, uint16_t *buffer);
+extern void get_chassis_power_limit(uint16_t *power_limit);
+
 extern uint8_t get_robot_id(void);
 extern uint8_t get_game_start(void);
+
+extern void get_shoot_heat0_limit_and_heat0(uint16_t *heat0_limit, uint16_t *heat0);
+extern void get_shoot_heat1_limit_and_heat1(uint16_t *heat1_limit, uint16_t *heat1);
 
 #if GIMBAL_MOTOR_6020_CAN_LOSE_SLOVE
 extern void GIMBAL_lose_solve(void);

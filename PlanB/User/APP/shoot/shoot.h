@@ -125,8 +125,10 @@ typedef struct
     uint16_t reverse_time;
     bool_t move_flag;
 
-    uint16_t heat_limit;
-    uint16_t heat;
+    uint16_t heat_limit_0;
+    uint16_t heat_0;
+    uint16_t heat_limit_1;
+    uint16_t heat_1;
 
     bool_t high_speed_on;
 } shoot_control_t;
