@@ -1,0 +1,13 @@
+.\objects\ui_task.o: ..\User\APP\UI_task\ui_task.c
+.\objects\ui_task.o: ..\FreeRTOS\include\FreeRTOS.h
+.\objects\ui_task.o: E:\Keil_v5\ARM\ARM_Compiler_5.06u7\Bin\..\include\stddef.h
+.\objects\ui_task.o: E:\Keil_v5\ARM\ARM_Compiler_5.06u7\Bin\..\include\stdint.h
+.\objects\ui_task.o: ..\FreeRTOS\include\FreeRTOSConfig.h
+.\objects\ui_task.o: ..\User\main.h
+.\objects\ui_task.o: ..\FreeRTOS\include\projdefs.h
+.\objects\ui_task.o: ..\FreeRTOS\include\portable.h
+.\objects\ui_task.o: ..\FreeRTOS\include\deprecated_definitions.h
+.\objects\ui_task.o: ..\FreeRTOS\portable\RVDS\ARM_CM4F\portmacro.h
+.\objects\ui_task.o: ..\FreeRTOS\include\mpu_wrappers.h
+.\objects\ui_task.o: ..\FreeRTOS\include\task.h
+.\objects\ui_task.o: ..\FreeRTOS\include\list.h
