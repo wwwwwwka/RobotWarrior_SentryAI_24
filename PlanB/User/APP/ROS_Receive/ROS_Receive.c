@@ -143,64 +143,28 @@ void UART_to_ROS_Msg(uint8_t *uart_buf, ROS_Msg_t *ros_msg)
 		return;
 	}
 
-	uint8_t CRC1 = *(uart_buf + 22);
-	uint8_t CRC2 = *(uart_buf + 23);
-	getModbusCRC16(uart_buf + 1,21);
+    unsigned char sum = 0x00;
 
-	if(CRC1 == *(uart_buf + 22) && CRC2 == *(uart_buf + 23))
-	{
-        // flag=1;
-		ros_msg->vx_set.byte_data[0] = *(uart_buf + 1);
-		ros_msg->vx_set.byte_data[1] = *(uart_buf + 2);
-		ros_msg->vx_set.byte_data[2] = *(uart_buf + 3);
-		ros_msg->vx_set.byte_data[3] = *(uart_buf + 4);
+    for(unsigned short i=0;i<uart_buf[2] - 1;i++)
+        sum += uart_buf[i];
+    
+    if(sum == uart_buf[uart_buf[2]-1])
+    {
+        uint8_t* yawDataPtr = &uart_buf[3];
+        uint8_t* pitchDataPtr = &uart_buf[7];
+        uint8_t* depthDataPtr = &uart_buf[11];
+        
+        fp32 set_yaw, set_pitch, depth;
+        memcpy(&set_yaw, yawDataPtr, sizeof(fp32));
+        memcpy(&set_pitch, pitchDataPtr, sizeof(fp32));
+        memcpy(&depth, depthDataPtr, sizeof(fp32));
 
-		ros_msg->vy_set.byte_data[0] = *(uart_buf + 5);
-		ros_msg->vy_set.byte_data[1] = *(uart_buf + 6);
-		ros_msg->vy_set.byte_data[2] = *(uart_buf + 7);
-		ros_msg->vy_set.byte_data[3] = *(uart_buf + 8);
+        ROS_Msg.shoot_yaw = set_yaw;
+        ROS_Msg.shoot_pitch = set_pitch;
+        ROS_Msg.shoot_depth = depth;
+        
+    }
 
-		ros_msg->wz_set.byte_data[0] = *(uart_buf + 9);
-		ros_msg->wz_set.byte_data[1] = *(uart_buf + 10);
-		ros_msg->wz_set.byte_data[2] = *(uart_buf + 11);
-		ros_msg->wz_set.byte_data[3] = *(uart_buf + 12);
-
-//			ros_msg->yaw_add.byte_data[0] = *(uart_buf + 13);
-//			ros_msg->yaw_add.byte_data[1] = *(uart_buf + 14);
-//			ros_msg->yaw_add.byte_data[2] = *(uart_buf + 15);
-//			ros_msg->yaw_add.byte_data[3] = *(uart_buf + 16);
-
-//			ros_msg->pitch_add.byte_data[0] = *(uart_buf + 17);
-//			ros_msg->pitch_add.byte_data[1] = *(uart_buf + 18);
-//			ros_msg->pitch_add.byte_data[2] = *(uart_buf + 19);
-//			ros_msg->pitch_add.byte_data[3] = *(uart_buf + 20);
-
-		ros_msg->mode = *(uart_buf + 21);
-	}
-	else
-	{
-		unsigned char sum = 0x00;
-	
-		for(unsigned short i=0;i<uart_buf[2] - 1;i++)
-			sum += uart_buf[i];
-		
-		if(sum == uart_buf[uart_buf[2]-1])
-		{
-			uint8_t* yawDataPtr = &uart_buf[3];
-			uint8_t* pitchDataPtr = &uart_buf[7];
-			uint8_t* depthDataPtr = &uart_buf[11];
-			
-			fp32 set_yaw, set_pitch, depth;
-			memcpy(&set_yaw, yawDataPtr, sizeof(fp32));
-			memcpy(&set_pitch, pitchDataPtr, sizeof(fp32));
-			memcpy(&depth, depthDataPtr, sizeof(fp32));
-
-			ROS_Msg.shoot_yaw = set_yaw;
-			ROS_Msg.shoot_pitch = set_pitch;
-			ROS_Msg.shoot_depth = depth;
-			
-		}
-	}
 }
 
 

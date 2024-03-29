@@ -3,9 +3,9 @@
 
 #include "main.h"
 
-#define ROS_START_BYTE 0x5A
-#define ROS_RX_BUF_NUM 48u
-#define ROS_FRAME_LENGTH 24u
+#define ROS_START_BYTE 0x42
+#define ROS_RX_BUF_NUM 36u
+#define ROS_FRAME_LENGTH 18u
 
 //陀螺仪数据发送周期 ms
 #define IMU_SEND_TIME 20

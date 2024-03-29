@@ -19,12 +19,45 @@
         (ptr)->temperate = (rx_message)->Data[6];                                              \
     }
 
+//机器人ID和比赛开始指令读取
+#define get_referee_Id_Game_measuer(ptr, rx_message)                                                 \
+    {                                                                                                \
+        (ptr)->robot_id = (uint8_t)((rx_message)->Data[0]);                                          \
+        (ptr)->game_start = (uint8_t)((rx_message)->Data[1]);                                        \
+    }
+
+//机器人枪口热量及枪口热量限制
+#define get_referee_shooter_measuer(ptr, rx_message)                                                 \
+    {                                                                                                \
+        (ptr)->shooter_1_limit = (uint16_t)((rx_message)->Data[0] << 8 | (rx_message)->Data[1]);     \
+        (ptr)->shooter_1_heat = (uint16_t)((rx_message)->Data[2] << 8 | (rx_message)->Data[3]);      \
+        (ptr)->shooter_2_limit = (uint16_t)((rx_message)->Data[4] << 8 | (rx_message)->Data[5]);     \
+        (ptr)->shooter_2_heat = (uint16_t)((rx_message)->Data[6] << 8 | (rx_message)->Data[7]);      \
+    }
+
+//机器人底盘功率限制相关
+#define get_referee_chassiser_measuer(ptr, rx_message)                                               \
+    {                                                                                                 \
+        (ptr)->chassis_power.byte_data[0]=(rx_message)->Data[0];                                      \
+        (ptr)->chassis_power.byte_data[1]=(rx_message)->Data[1];                                         \
+        (ptr)->chassis_power.byte_data[2]=(rx_message)->Data[2];                                        \
+        (ptr)->chassis_power.byte_data[3]=(rx_message)->Data[3];                                       \
+        (ptr)->chassis_power_buffer = (uint16_t)((rx_message)->Data[4] << 8 | (rx_message)->Data[5]);     \
+        (ptr)->chassis_power_limit = (uint16_t)((rx_message)->Data[6] << 8 | (rx_message)->Data[7]);      \
+    }
+
 //统一处理can接收函数
 static void CAN_hook(CanRxMsg *rx_message);
 //声明电机变量
 static motor_measure_t motor_yaw, motor_pit, motor_trigger, motor_chassis[4];
 
 static CanTxMsg GIMBAL_TxMessage;
+
+static referee_Id_Game_Data_t referee_Id_Game;
+
+static referee_chassis_Data_t referee_chassis;
+
+static referee_shooter_Data_t referee_shooter;
 
 #if GIMBAL_MOTOR_6020_CAN_LOSE_SLOVE
 static uint8_t delay_time = 100;
@@ -173,7 +206,16 @@ const motor_measure_t *get_Chassis_Motor_Measure_Point(uint8_t i)
 {
     return &motor_chassis[(i & 0x03)];
 }
+uint8_t get_robot_id(void)
+{
+    
+    return referee_Id_Game.robot_id;
+}
 
+uint8_t get_game_start(void)
+{
+    return referee_Id_Game.game_start;
+}
 //统一处理can中断函数，并且记录发送数据的时间，作为离线判断依据
 static void CAN_hook(CanRxMsg *rx_message)
 {
@@ -214,6 +256,26 @@ static void CAN_hook(CanRxMsg *rx_message)
         get_motor_measure(&motor_chassis[i], rx_message);
         //记录时间
         //DetectHook(ChassisMotor1TOE + i);
+        break;
+    }
+    case CAN_ID_GAME_REFEREE_ID:
+    {
+        //处理裁判系统传来的机器人ID和比赛结束指令
+        
+        get_referee_Id_Game_measuer(&referee_Id_Game,rx_message);
+        
+        break;
+    }
+    case CAN_SHOOTER_REFEREE_ID:
+    {
+        get_referee_shooter_measuer(&referee_shooter, rx_message);
+        
+        break;
+    }
+    case CAN_CHASSIS_REFEREE_ID:
+    {
+        get_referee_chassiser_measuer(&referee_chassis, rx_message);
+        
         break;
     }
 

@@ -25,6 +25,7 @@
 #include "gimbal_behaviour.h"
 #include "rc_handoff.h"
 
+#include "detect_task.h"
 //按键开关小陀螺
 #define ROTATION_ON_KEYBOARD   KEY_PRESSED_OFFSET_SHIFT
 
@@ -236,7 +237,18 @@ void chassis_behaviour_mode_set(chassis_move_t *chassis_move_mode)
     // }
 
     // chassis_behavour_set(chassis_move_mode);
-    chassis_behaviour_mode = CHASSIS_ROTATION;  
+    // chassis_behaviour_mode = CHASSIS_ROTATION;  
+    if(toe_is_error(DBUS_TOE) != 1)
+	{
+		chassis_behavour_set(chassis_move_mode);
+	}
+	else
+	{
+		if(get_game_start()==1)
+        {
+            chassis_behaviour_mode = CHASSIS_ROTATION; 
+        }
+	}
     //根据行为状态机选择底盘状态机
     if (chassis_behaviour_mode == CHASSIS_ZERO_FORCE)
     {

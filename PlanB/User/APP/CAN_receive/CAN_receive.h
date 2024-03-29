@@ -19,6 +19,10 @@ typedef enum
     CAN_TRIGGER_MOTOR_ID = 0x207,
     CAN_GIMBAL_ALL_ID = 0x1FF,
 
+    CAN_ID_GAME_REFEREE_ID = 0x300,
+    CAN_SHOOTER_REFEREE_ID = 0x301,
+    CAN_CHASSIS_REFEREE_ID = 0x302
+
 } can_msg_id_e;
 
 //rm电机统一数据结构体
@@ -30,6 +34,32 @@ typedef struct
     uint8_t temperate;      //电机温度
     int16_t last_ecd;       //上次转子机械角度
 } motor_measure_t;
+
+
+//自定义，用于处理从低C板接收到的裁判系统数据
+typedef struct
+{
+    uint8_t robot_id;
+    uint8_t game_start;
+} referee_Id_Game_Data_t;
+
+//自定义，用于处理从低C板接收到的裁判系统数据
+typedef struct
+{
+    Float_Byte chassis_power;
+    uint16_t chassis_power_buffer;
+    uint16_t chassis_power_limit;
+} referee_chassis_Data_t;
+
+//自定义，用于处理从低C板接收到的裁判系统数据
+typedef struct
+{
+    uint16_t shooter_1_limit;
+    uint16_t shooter_1_heat;
+    uint16_t shooter_2_limit;
+    uint16_t shooter_2_heat;
+} referee_shooter_Data_t;
+
 
 extern void CAN_CMD_CHASSIS_RESET_ID(void);
 
@@ -45,6 +75,9 @@ extern const motor_measure_t *get_Pitch_Gimbal_Motor_Measure_Point(void);
 extern const motor_measure_t *get_Trigger_Motor_Measure_Point(void);
 //返回底盘电机变量地址，通过指针方式获取原始数据,i的范围是0-3，对应0x201-0x204,
 extern const motor_measure_t *get_Chassis_Motor_Measure_Point(uint8_t i);
+
+extern uint8_t get_robot_id(void);
+extern uint8_t get_game_start(void);
 
 #if GIMBAL_MOTOR_6020_CAN_LOSE_SLOVE
 extern void GIMBAL_lose_solve(void);
